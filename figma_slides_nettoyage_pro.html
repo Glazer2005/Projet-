@@ -1,0 +1,380 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif}
+:root{--or:#FF9A00;--br:#1E0A00;--br2:#3D1A00;--or2:#FFB733;--wh:#ffffff;--gr:#F5F5F5;--mt:#666}
+.shell{background:#111;padding:16px;border-radius:14px}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:0 4px}
+.topbar-title{font-size:12px;color:#888;font-weight:500}
+.slide-counter{font-size:12px;color:var(--or);font-weight:500}
+.stage{width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;position:relative;background:#fff}
+.slide{width:100%;height:100%;display:none;position:relative}
+.slide.active{display:flex}
+.nav-row{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:12px}
+.nav-btn{background:var(--br2);border:none;color:var(--or);padding:8px 20px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;transition:background .15s}
+.nav-btn:hover{background:var(--or);color:var(--br)}
+.dots{display:flex;gap:6px;align-items:center}
+.dot{width:7px;height:7px;border-radius:50%;background:#444;cursor:pointer;transition:all .15s}
+.dot.active{background:var(--or);transform:scale(1.3)}
+
+/* SLIDE LAYOUT HELPERS */
+.s-cover{background:var(--br);flex-direction:column;justify-content:center;align-items:flex-start;padding:6% 7%}
+.s-white{background:#fff;flex-direction:column;padding:4% 5%}
+.s-split{background:#fff;flex-direction:row}
+.s-dark{background:var(--br);flex-direction:column;padding:4% 5%}
+
+/* Cover */
+.cov-badge{background:rgba(255,154,0,.15);border:1px solid rgba(255,154,0,.35);color:var(--or);font-size:1.1vw;padding:.3vw .9vw;border-radius:20px;display:inline-block;margin-bottom:1.5vw;font-weight:500}
+.cov-title{font-size:5vw;font-weight:700;color:#fff;line-height:1.1;margin-bottom:.8vw}
+.cov-title span{color:var(--or)}
+.cov-sub{font-size:1.4vw;color:rgba(255,255,255,.55);margin-bottom:2.5vw;font-style:italic}
+.kpi-row{display:flex;gap:1vw;width:100%}
+.kpi{flex:1;background:rgba(255,154,0,.1);border:1px solid rgba(255,154,0,.25);border-top:3px solid var(--or);border-radius:8px;padding:1vw;text-align:center}
+.kpi-v{font-size:1.8vw;font-weight:700;color:var(--or)}
+.kpi-l{font-size:.85vw;color:rgba(255,255,255,.5);margin-top:.2vw}
+.cov-deco{position:absolute;right:0;top:0;width:35%;height:100%;background:rgba(255,154,0,.04);border-left:2px solid rgba(255,154,0,.1)}
+.cov-line{position:absolute;bottom:0;left:0;width:100%;height:3px;background:var(--or)}
+
+/* Section header bar */
+.sec-bar{display:flex;align-items:center;gap:0;margin-bottom:1.5vw;border-radius:6px;overflow:hidden;flex-shrink:0}
+.sec-num{background:var(--or);color:var(--br);font-size:1.4vw;font-weight:700;padding:.5vw 1.2vw}
+.sec-name{background:var(--br);color:var(--or);font-size:1.2vw;font-weight:600;padding:.5vw 1.5vw;flex:1}
+
+/* Cards grid */
+.cards{display:grid;gap:.7vw;flex:1}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.card{background:#fafafa;border:1px solid #e8e8e8;border-left:3px solid var(--or);border-radius:8px;padding:.8vw 1vw}
+.card-title{font-size:1.05vw;font-weight:600;color:#1a1a1a;margin-bottom:.3vw}
+.card-sub{font-size:.85vw;color:#666;line-height:1.5}
+.card-price{font-size:1vw;color:var(--or);font-weight:600;margin-top:.4vw}
+.card-dark{background:rgba(255,154,0,.08);border-color:var(--or);color:#fff}
+.card-dark .card-title{color:var(--or)}
+.card-dark .card-sub{color:rgba(255,255,255,.6)}
+
+/* Text utilities */
+.body-txt{font-size:1vw;color:#444;line-height:1.7;margin-bottom:.8vw}
+.orange{color:var(--or)}
+.white{color:#fff}
+.bold{font-weight:600}
+.italic{font-style:italic}
+
+/* Split layout */
+.split-left{width:48%;background:var(--br);display:flex;flex-direction:column;justify-content:center;padding:4% 4%}
+.split-right{width:52%;display:flex;flex-direction:column;justify-content:center;padding:4% 4%}
+
+/* Values */
+.val-row{display:flex;align-items:flex-start;gap:.8vw;margin-bottom:.8vw}
+.val-dot{width:2vw;height:2vw;border-radius:50%;background:var(--or);color:var(--br);font-size:.9vw;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1vw}
+.val-info h4{font-size:1vw;font-weight:600;color:#1a1a1a;margin-bottom:.15vw}
+.val-info p{font-size:.85vw;color:#666;line-height:1.5}
+
+/* Org chart */
+.org{display:flex;flex-direction:column;align-items:center;gap:.5vw;width:100%}
+.org-box{border-radius:8px;padding:.6vw 1.2vw;text-align:center;font-size:.9vw;font-weight:600}
+.org-line{width:2px;height:1.5vw;background:var(--or)}
+.org-row{display:flex;gap:1.5vw;justify-content:center}
+.org-connector{width:60%;height:2px;background:var(--or);margin:.2vw auto}
+
+/* Finance */
+.fin-table{width:100%;border-collapse:collapse;font-size:.9vw}
+.fin-table th{background:var(--br);color:var(--or);padding:.5vw .8vw;text-align:left;font-size:.85vw}
+.fin-table td{padding:.45vw .8vw;border-bottom:1px solid #eee;color:#333}
+.fin-table tr:nth-child(even) td{background:#f9f9f9}
+.fin-table .hi{color:var(--or);font-weight:600}
+
+/* Market */
+.mkt-stat{text-align:center;padding:.8vw}
+.mkt-num{font-size:2.5vw;font-weight:700;color:var(--or)}
+.mkt-lbl{font-size:.8vw;color:#666;margin-top:.2vw}
+
+/* Steps */
+.steps{display:flex;flex-direction:column;gap:.5vw;flex:1}
+.step-row{display:flex;align-items:center;gap:.8vw}
+.step-n{width:1.8vw;height:1.8vw;border-radius:50%;background:var(--or);color:var(--br);font-size:.85vw;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-info{flex:1;background:#fafafa;border-left:2px solid var(--or);border-radius:0 6px 6px 0;padding:.4vw .8vw}
+.step-t{font-size:.9vw;font-weight:600;color:#111}
+.step-s{font-size:.78vw;color:#666}
+
+/* Conclusion */
+.check-row{display:flex;align-items:flex-start;gap:.8vw;margin-bottom:.8vw}
+.check{width:1.5vw;height:1.5vw;border-radius:50%;background:var(--or);color:var(--br);font-size:.85vw;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1vw}
+.check-text{font-size:1.05vw;color:rgba(255,255,255,.85);line-height:1.5}
+
+/* Phase strip */
+.phases{display:flex;gap:.5vw;margin-top:1vw}
+.ph{flex:1;border-radius:8px;overflow:hidden}
+.ph-top{padding:.6vw;text-align:center;font-size:1.4vw;font-weight:700}
+.ph-body{background:rgba(255,255,255,.06);padding:.6vw .8vw}
+.ph-name{font-size:.85vw;font-weight:600;color:var(--or)}
+.ph-period{font-size:.75vw;color:rgba(255,255,255,.5);margin-top:.1vw}
+.ph-detail{font-size:.75vw;color:rgba(255,255,255,.7);margin-top:.4vw;line-height:1.4}
+</style>
+
+<div class="shell">
+  <div class="topbar">
+    <span class="topbar-title">Présentation investisseur — Nettoyage Professionnel Sénégal 2025</span>
+    <span class="slide-counter" id="sc">Slide 1 / 9</span>
+  </div>
+
+  <div class="stage">
+
+    <!-- SLIDE 1 — COUVERTURE -->
+    <div class="slide s-cover active">
+      <div class="cov-deco"></div>
+      <div class="cov-line"></div>
+      <div class="cov-badge">Business Plan · Version Investisseur · 2025</div>
+      <div class="cov-title">Nettoyage<br><span>Professionnel</span></div>
+      <div class="cov-sub">"L'hygiène, notre engagement. La qualité, notre signature."</div>
+      <div class="kpi-row">
+        <div class="kpi"><div class="kpi-v">800K</div><div class="kpi-l">FCFA — Capital</div></div>
+        <div class="kpi"><div class="kpi-v">3–6 mois</div><div class="kpi-l">Retour invest.</div></div>
+        <div class="kpi"><div class="kpi-v">1,35M</div><div class="kpi-l">FCFA CA/mois</div></div>
+        <div class="kpi"><div class="kpi-v">980K</div><div class="kpi-l">FCFA bénéfice net</div></div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2 — CONCEPT & VISION -->
+    <div class="slide s-split">
+      <div class="split-left">
+        <div style="font-size:.9vw;color:var(--or);font-weight:600;letter-spacing:1px;margin-bottom:1vw;text-transform:uppercase">02 · Le concept</div>
+        <div style="font-size:2.5vw;font-weight:700;color:#fff;line-height:1.2;margin-bottom:1vw">Transformer<br><span style="color:var(--or)">l'informel</span><br>en service pro</div>
+        <div style="font-size:.95vw;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:1.5vw">Le marché du nettoyage au Sénégal est dominé par des prestataires informels, sans formation ni garantie. Nous créons la première alternative structurée et fiable.</div>
+        <div style="background:rgba(255,154,0,.12);border:1px solid rgba(255,154,0,.3);border-radius:8px;padding:1vw 1.2vw">
+          <div style="font-size:.8vw;color:var(--or);margin-bottom:.4vw;font-weight:600">NOTRE MISSION</div>
+          <div style="font-size:.95vw;color:rgba(255,255,255,.8);font-style:italic;line-height:1.6">"Offrir un nettoyage de haute qualité qui améliore la santé, le confort et la productivité de nos clients."</div>
+        </div>
+      </div>
+      <div class="split-right" style="background:#fafafa">
+        <div style="font-size:1.1vw;font-weight:600;color:#1a1a1a;margin-bottom:1.2vw">Nos 5 valeurs fondatrices</div>
+        <div class="val-row"><div class="val-dot">Q</div><div class="val-info"><h4>Qualité</h4><p>Protocole 6 étapes + contrôle obligatoire après chaque intervention</p></div></div>
+        <div class="val-row"><div class="val-dot">F</div><div class="val-info"><h4>Fiabilité</h4><p>Ponctualité garantie, engagements tenus ou remboursement partiel</p></div></div>
+        <div class="val-row"><div class="val-dot">H</div><div class="val-info"><h4>Hygiène</h4><p>Produits bactéricides certifiés, efficaces sur 99,9% des germes</p></div></div>
+        <div class="val-row"><div class="val-dot">P</div><div class="val-info"><h4>Professionnalisme</h4><p>Tenue uniforme, charte de conduite, formation initiale 3 jours</p></div></div>
+        <div class="val-row"><div class="val-dot">I</div><div class="val-info"><h4>Intégrité</h4><p>Tarifs transparents, facturation claire, aucun frais caché</p></div></div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 — SERVICES -->
+    <div class="slide s-white">
+      <div class="sec-bar"><div class="sec-num">03</div><div class="sec-name">Catalogue de services</div></div>
+      <div class="cards grid-3">
+        <div class="card"><div class="card-title">Maison standard</div><div class="card-sub">Balayage · lavage sols · dépoussiérage · désinfection · parfum</div><div class="card-price">10 000 – 15 000 FCFA</div></div>
+        <div class="card"><div class="card-title">Cuisine premium</div><div class="card-sub">Dégraissage murs/plaques · armoires · hotte · odeurs · sol profond</div><div class="card-price">15 000 – 25 000 FCFA</div></div>
+        <div class="card"><div class="card-title">Bureau / Commerce</div><div class="card-sub">Bureaux · chaises · vitres · sols · toilettes · espaces communs</div><div class="card-price">20 000 – 50 000 FCFA</div></div>
+        <div class="card"><div class="card-title">Après chantier</div><div class="card-sub">Poussière lourde · ciment · peinture · gravats légers · finition</div><div class="card-price">30 000 – 80 000 FCFA</div></div>
+        <div class="card"><div class="card-title">Textile & mobilier</div><div class="card-sub">Canapés · tapis · matelas — injecteur-extracteur + séchage</div><div class="card-price">10 000 – 30 000 FCFA</div></div>
+        <div class="card" style="border-left-color:#FFB733;background:#FFF8F0"><div class="card-title" style="color:#E65100">Contrat mensuel B2B</div><div class="card-sub" style="color:#666">Hôtels · restaurants · PME — passages réguliers + tarif préférentiel</div><div class="card-price" style="color:#E65100">Sur devis personnalisé</div></div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4 — TENUES & BRANDING -->
+    <div class="slide s-dark">
+      <div class="sec-bar"><div class="sec-num">04</div><div class="sec-name">Tenues & identité visuelle terrain</div></div>
+      <div style="display:flex;gap:2vw;flex:1;align-items:center">
+        <div style="flex:1;display:flex;flex-direction:column;gap:.8vw">
+          <div style="font-size:1vw;font-weight:600;color:var(--or);margin-bottom:.3vw">Tenue Agent terrain</div>
+          <div style="display:flex;flex-direction:column;gap:.5vw">
+            <div style="display:flex;align-items:center;gap:.7vw"><div style="width:1.2vw;height:1.2vw;border-radius:3px;background:#FF9A00;flex-shrink:0"></div><span style="font-size:.9vw;color:rgba(255,255,255,.8)">Lacoste orange #FF9A00 — logo blanc gauche</span></div>
+            <div style="display:flex;align-items:center;gap:.7vw"><div style="width:1.2vw;height:1.2vw;border-radius:3px;background:#3D1A00;border:1px solid #ff9a00;flex-shrink:0"></div><span style="font-size:.9vw;color:rgba(255,255,255,.8)">Salopette marron #3D1A00 — poches multiples</span></div>
+            <div style="display:flex;align-items:center;gap:.7vw"><div style="width:1.2vw;height:1.2vw;border-radius:3px;background:#FF8C00;flex-shrink:0"></div><span style="font-size:.9vw;color:rgba(255,255,255,.8)">Gants caoutchouc orange — protection chimique</span></div>
+            <div style="display:flex;align-items:center;gap:.7vw"><div style="width:1.2vw;height:1.2vw;border-radius:3px;background:#111;border:1px solid #555;flex-shrink:0"></div><span style="font-size:.9vw;color:rgba(255,255,255,.8)">Bottes sécurité noires — antidérapantes</span></div>
+            <div style="display:flex;align-items:center;gap:.7vw"><div style="width:1.2vw;height:1.2vw;border-radius:3px;background:#B3E5FC;flex-shrink:0"></div><span style="font-size:.9vw;color:rgba(255,255,255,.8)">Lunettes de protection transparentes</span></div>
+          </div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:.8vw">
+          <div style="font-size:1vw;font-weight:600;color:var(--or);margin-bottom:.3vw">Tenue Chef d'équipe</div>
+          <div style="display:flex;flex-direction:column;gap:.5vw">
+            <div style="display:flex;align-items:center;gap:.7vw"><div style="width:1.2vw;height:1.2vw;border-radius:3px;background:#FF9A00;flex-shrink:0"></div><span style="font-size:.9vw;color:rgba(255,255,255,.8)">Lacoste orange + badge CHEF poitrine droite</span></div>
+            <div style="display:flex;align-items:center;gap:.7vw"><div style="width:1.2vw;height:1.2vw;border-radius:3px;background:#3D1A00;border:1px solid #ff9a00;flex-shrink:0"></div><span style="font-size:.9vw;color:rgba(255,255,255,.8)">Salopette marron + casque orange de sécurité</span></div>
+            <div style="display:flex;align-items:center;gap:.7vw"><div style="width:1.2vw;height:1.2vw;border-radius:3px;background:#F5F5F5;flex-shrink:0"></div><span style="font-size:.9vw;color:rgba(255,255,255,.8)">Clipboard qualité + stylos — contrôle terrain</span></div>
+            <div style="display:flex;align-items:center;gap:.7vw"><div style="width:1.2vw;height:1.2vw;border-radius:3px;background:#111;border:1px solid #555;flex-shrink:0"></div><span style="font-size:.9vw;color:rgba(255,255,255,.8)">Bottes sécurité noires — antidérapantes</span></div>
+          </div>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:.9vw;font-weight:600;color:var(--or);margin-bottom:.8vw">Palette officielle</div>
+          <div style="display:flex;flex-direction:column;gap:.5vw">
+            <div style="height:2vw;border-radius:5px;background:#FF9A00;display:flex;align-items:center;padding:0 .8vw;font-size:.8vw;color:#1E0A00;font-weight:600">#FF9A00 — Orange Illustrator</div>
+            <div style="height:2vw;border-radius:5px;background:#3D1A00;display:flex;align-items:center;padding:0 .8vw;font-size:.8vw;color:#FF9A00;font-weight:600">#3D1A00 — Marron salopette</div>
+            <div style="height:2vw;border-radius:5px;background:#1E0A00;border:1px solid #3D1A00;display:flex;align-items:center;padding:0 .8vw;font-size:.8vw;color:#FF9A00;font-weight:600">#1E0A00 — Marron nuit</div>
+            <div style="height:2vw;border-radius:5px;background:#fff;display:flex;align-items:center;padding:0 .8vw;font-size:.8vw;color:#1E0A00;font-weight:600">#FFFFFF — Blanc logo</div>
+            <div style="height:2vw;border-radius:5px;background:#111;display:flex;align-items:center;padding:0 .8vw;font-size:.8vw;color:#fff;font-weight:600">#111111 — Noir bottes</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5 — MATÉRIEL -->
+    <div class="slide s-white">
+      <div class="sec-bar"><div class="sec-num">05</div><div class="sec-name">Matériel professionnel</div></div>
+      <div class="cards grid-3">
+        <div class="card"><div class="card-title">Nettoyeur haute pression</div><div class="card-sub">Sols extérieurs · murs · terrasses · jet 150 bar — usage quotidien</div><div class="card-price">150 000 FCFA</div></div>
+        <div class="card"><div class="card-title">Aspirateur eau/poussière</div><div class="card-sub">Liquides · poussières fines · résidus chantier — usage quotidien</div><div class="card-price">80 000 FCFA</div></div>
+        <div class="card"><div class="card-title">Injecteur-extracteur</div><div class="card-sub">Canapés · tapis · matelas — injection + aspiration simultanée</div><div class="card-price">120 000 FCFA</div></div>
+        <div class="card"><div class="card-title">Monobrosse pro</div><div class="card-sub">Polissage et décapage sols — 180 tr/min — carrelage · marbre · béton</div><div class="card-price">80 000 FCFA</div></div>
+        <div class="card"><div class="card-title">Kit outils manuels</div><div class="card-sub">Brosses · serpillières microfibres · raclettes · seaux industriels</div><div class="card-price">70 000 FCFA</div></div>
+        <div class="card" style="background:#FFF8F0;border-left-color:#FFB733"><div class="card-title" style="color:#E65100">Stock produits</div><div class="card-sub">Dégraissant · désinfectant · anti-calcaire · parfum professionnel</div><div class="card-price" style="color:#E65100">100 000 FCFA</div></div>
+      </div>
+      <div style="margin-top:.8vw;background:#1E0A00;border-radius:8px;padding:.7vw 1.5vw;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:1vw;color:rgba(255,255,255,.7)">Total investissement matériel</span>
+        <span style="font-size:1.4vw;font-weight:700;color:var(--or)">600 000 FCFA</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 6 — ÉQUIPE -->
+    <div class="slide s-white">
+      <div class="sec-bar"><div class="sec-num">06</div><div class="sec-name">Organisation de l'équipe</div></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">
+        <div style="background:#FF9A00;color:#1E0A00;border-radius:10px;padding:.7vw 2vw;font-size:1.05vw;font-weight:700;text-align:center;width:30%">Directeur Général<br><span style="font-size:.75vw;font-weight:500;opacity:.7">Stratégie · Finances · Clients</span></div>
+        <div style="width:2px;height:1.5vw;background:var(--or)"></div>
+        <div style="background:#3D1A00;color:#FF9A00;border-radius:10px;padding:.7vw 2vw;font-size:1.05vw;font-weight:700;text-align:center;width:38%">Chef d'équipe<br><span style="font-size:.75vw;font-weight:500;opacity:.7">Supervision · Qualité · Planning · Rapports</span></div>
+        <div style="display:flex;gap:4vw;align-items:flex-start;margin-top:.3vw">
+          <div style="width:2px;height:1.5vw;background:var(--or);margin:0 auto"></div>
+          <div style="width:2px;height:1.5vw;background:var(--or);margin:0 auto"></div>
+          <div style="width:2px;height:1.5vw;background:var(--or);margin:0 auto"></div>
+        </div>
+        <div style="display:flex;gap:1.5vw">
+          <div style="background:#F5F5F5;border:1px solid #e0e0e0;border-top:3px solid var(--or);border-radius:8px;padding:.7vw 1vw;font-size:.9vw;font-weight:600;text-align:center;min-width:10vw">Agent 1<br><span style="font-size:.75vw;color:#888;font-weight:400">Nettoyage terrain</span></div>
+          <div style="background:#F5F5F5;border:1px solid #e0e0e0;border-top:3px solid var(--or);border-radius:8px;padding:.7vw 1vw;font-size:.9vw;font-weight:600;text-align:center;min-width:10vw">Agent 2<br><span style="font-size:.75vw;color:#888;font-weight:400">Nettoyage terrain</span></div>
+          <div style="background:#F5F5F5;border:1px solid #ddd;border-top:3px dashed #ccc;border-radius:8px;padding:.7vw 1vw;font-size:.9vw;font-weight:600;text-align:center;min-width:10vw;color:#aaa">+ 3 agents<br><span style="font-size:.75vw;font-weight:400">à recruter (phase 2)</span></div>
+        </div>
+        <div style="display:flex;gap:2vw;margin-top:1.5vw;width:100%">
+          <div style="flex:1;background:#FFF8F0;border-left:3px solid var(--or);border-radius:4px;padding:.6vw .9vw"><div style="font-size:.8vw;font-weight:600;color:var(--or)">Chef d'équipe</div><div style="font-size:.78vw;color:#555">80 000–120 000 FCFA/mois</div></div>
+          <div style="flex:1;background:#FFF8F0;border-left:3px solid var(--or);border-radius:4px;padding:.6vw .9vw"><div style="font-size:.8vw;font-weight:600;color:var(--or)">Agent terrain</div><div style="font-size:.78vw;color:#555">40 000–60 000 FCFA/mois</div></div>
+          <div style="flex:1;background:#FFF8F0;border-left:3px solid var(--or);border-radius:4px;padding:.6vw .9vw"><div style="font-size:.8vw;font-weight:600;color:var(--or)">Formation initiale</div><div style="font-size:.78vw;color:#555">3 jours — protocoles + EPI</div></div>
+          <div style="flex:1;background:#FFF8F0;border-left:3px solid var(--or);border-radius:4px;padding:.6vw .9vw"><div style="font-size:.8vw;font-weight:600;color:var(--or)">Évaluation</div><div style="font-size:.78vw;color:#555">Mensuelle — qualité + retour client</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7 — MARCHÉ -->
+    <div class="slide s-split">
+      <div class="split-left">
+        <div style="font-size:.9vw;color:var(--or);font-weight:600;letter-spacing:1px;margin-bottom:1vw;text-transform:uppercase">07 · Analyse du marché</div>
+        <div style="font-size:1.8vw;font-weight:700;color:#fff;margin-bottom:1.5vw;line-height:1.3">Un marché<br><span style="color:var(--or)">immense</span><br>et sous-exploité</div>
+        <div style="display:flex;flex-direction:column;gap:.8vw">
+          <div style="text-align:center;background:rgba(255,154,0,.1);border:1px solid rgba(255,154,0,.25);border-radius:8px;padding:.8vw"><div style="font-size:2vw;font-weight:700;color:var(--or)">3,5M+</div><div style="font-size:.8vw;color:rgba(255,255,255,.55)">habitants à Dakar seul</div></div>
+          <div style="text-align:center;background:rgba(255,154,0,.1);border:1px solid rgba(255,154,0,.25);border-radius:8px;padding:.8vw"><div style="font-size:2vw;font-weight:700;color:var(--or)">+10%</div><div style="font-size:.8vw;color:rgba(255,255,255,.55)">croissance marché/an en Afrique subsaharienne</div></div>
+          <div style="text-align:center;background:rgba(255,154,0,.1);border:1px solid rgba(255,154,0,.25);border-radius:8px;padding:.8vw"><div style="font-size:2vw;font-weight:700;color:var(--or)">95%</div><div style="font-size:.8vw;color:rgba(255,255,255,.55)">du marché encore informel — notre opportunité</div></div>
+        </div>
+      </div>
+      <div class="split-right" style="background:#fafafa;gap:0">
+        <div style="font-size:1.1vw;font-weight:600;color:#1a1a1a;margin-bottom:1vw">6 segments de clientèle cible</div>
+        <div style="display:flex;flex-direction:column;gap:.45vw;flex:1">
+          <div style="display:flex;align-items:center;gap:.8vw;background:#fff;border:1px solid #eee;border-left:3px solid var(--or);border-radius:5px;padding:.5vw .8vw"><div style="font-size:.9vw;font-weight:600;flex:1;color:#111">Particuliers & villas</div><div style="font-size:.8vw;color:var(--or);font-weight:600">Mensuel–hebdo</div></div>
+          <div style="display:flex;align-items:center;gap:.8vw;background:#fff;border:1px solid #eee;border-left:3px solid var(--or);border-radius:5px;padding:.5vw .8vw"><div style="font-size:.9vw;font-weight:600;flex:1;color:#111">Bureaux & administrations</div><div style="font-size:.8vw;color:var(--or);font-weight:600">Hebdo–quotidien</div></div>
+          <div style="display:flex;align-items:center;gap:.8vw;background:#fff;border:1px solid #eee;border-left:3px solid var(--or);border-radius:5px;padding:.5vw .8vw"><div style="font-size:.9vw;font-weight:600;flex:1;color:#111">Hôtels & résidences</div><div style="font-size:.8vw;color:var(--or);font-weight:600">Contrat quotidien</div></div>
+          <div style="display:flex;align-items:center;gap:.8vw;background:#fff;border:1px solid #eee;border-left:3px solid var(--or);border-radius:5px;padding:.5vw .8vw"><div style="font-size:.9vw;font-weight:600;flex:1;color:#111">Restaurants & cantines</div><div style="font-size:.8vw;color:var(--or);font-weight:600">Hebdo–quotidien</div></div>
+          <div style="display:flex;align-items:center;gap:.8vw;background:#fff;border:1px solid #eee;border-left:3px solid var(--or);border-radius:5px;padding:.5vw .8vw"><div style="font-size:.9vw;font-weight:600;flex:1;color:#111">Chantiers & promoteurs</div><div style="font-size:.8vw;color:var(--or);font-weight:600">Ponctuel</div></div>
+          <div style="display:flex;align-items:center;gap:.8vw;background:#fff;border:1px solid #eee;border-left:3px solid var(--or);border-radius:5px;padding:.5vw .8vw"><div style="font-size:.9vw;font-weight:600;flex:1;color:#111">Textiles (canapés, matelas)</div><div style="font-size:.8vw;color:var(--or);font-weight:600">Trimestriel</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8 — FINANCES -->
+    <div class="slide s-white">
+      <div class="sec-bar"><div class="sec-num">08</div><div class="sec-name">Plan financier — 3 scénarios</div></div>
+      <div style="display:flex;gap:1.5vw;flex:1">
+        <div style="flex:1;display:flex;flex-direction:column;gap:.5vw">
+          <table class="fin-table">
+            <thead><tr><th>Investissement initial</th><th style="text-align:right">FCFA</th></tr></thead>
+            <tbody>
+              <tr><td>Machines & équipements</td><td class="hi" style="text-align:right">500 000</td></tr>
+              <tr><td>Stock produits</td><td class="hi" style="text-align:right">100 000</td></tr>
+              <tr><td>Tenues équipe</td><td class="hi" style="text-align:right">50 000</td></tr>
+              <tr><td>Marketing</td><td class="hi" style="text-align:right">50 000</td></tr>
+              <tr><td>Transport & logistique</td><td class="hi" style="text-align:right">100 000</td></tr>
+              <tr><td style="font-weight:700">TOTAL</td><td style="text-align:right;font-weight:700;color:var(--or)">800 000</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="flex:1.5;display:flex;flex-direction:column;gap:.6vw">
+          <div style="display:flex;gap:.7vw">
+            <div style="flex:1;background:#fff5f5;border:1px solid #fcc;border-top:3px solid #e53;border-radius:8px;padding:.6vw .8vw;text-align:center"><div style="font-size:.75vw;color:#888;margin-bottom:.2vw">Pessimiste</div><div style="font-size:1.3vw;font-weight:700;color:#e53">300–600K</div><div style="font-size:.7vw;color:#aaa">FCFA/mois</div></div>
+            <div style="flex:1;background:#FFF8F0;border:2px solid var(--or);border-top:3px solid var(--or);border-radius:8px;padding:.6vw .8vw;text-align:center"><div style="font-size:.75vw;color:var(--or);margin-bottom:.2vw;font-weight:600">Réaliste ★</div><div style="font-size:1.3vw;font-weight:700;color:var(--or)">1 350 000</div><div style="font-size:.7vw;color:#aaa">FCFA/mois</div></div>
+            <div style="flex:1;background:#f0fff4;border:1px solid #9c9;border-top:3px solid #2a7;border-radius:8px;padding:.6vw .8vw;text-align:center"><div style="font-size:.75vw;color:#888;margin-bottom:.2vw">Optimiste</div><div style="font-size:1.3vw;font-weight:700;color:#2a7">3 000 000</div><div style="font-size:.7vw;color:#aaa">FCFA/mois</div></div>
+          </div>
+          <table class="fin-table">
+            <thead><tr><th>Charges mensuelles</th><th style="text-align:right">Min</th><th style="text-align:right">Max</th></tr></thead>
+            <tbody>
+              <tr><td>Salaires équipe</td><td style="text-align:right">200 000</td><td style="text-align:right">420 000</td></tr>
+              <tr><td>Produits & matières</td><td style="text-align:right">50 000</td><td style="text-align:right">80 000</td></tr>
+              <tr><td>Transport & communication</td><td style="text-align:right">40 000</td><td style="text-align:right">85 000</td></tr>
+              <tr><td>Maintenance & imprévus</td><td style="text-align:right">10 000</td><td style="text-align:right">20 000</td></tr>
+              <tr><td style="font-weight:700">TOTAL CHARGES</td><td style="text-align:right;font-weight:700">300 000</td><td style="text-align:right;font-weight:700">605 000</td></tr>
+            </tbody>
+          </table>
+          <div style="background:#1E0A00;border-radius:8px;padding:.6vw 1vw;display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:.85vw;color:rgba(255,255,255,.7)">Bénéfice net estimé (réaliste) :</span>
+            <span style="font-size:1.4vw;font-weight:700;color:var(--or)">≈ 980 000 FCFA / mois</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9 — CONCLUSION -->
+    <div class="slide s-dark">
+      <div style="display:flex;align-items:center;gap:.8vw;margin-bottom:1.5vw">
+        <div style="background:var(--or);color:var(--br);font-size:1vw;font-weight:700;padding:.4vw 1vw;border-radius:20px">09</div>
+        <div style="font-size:1.2vw;font-weight:600;color:#fff">Conclusion & appel à investissement</div>
+      </div>
+      <div style="display:flex;gap:2vw;flex:1;align-items:flex-start">
+        <div style="flex:1.4">
+          <div style="font-size:1vw;color:var(--or);font-weight:600;margin-bottom:.8vw">5 raisons d'investir</div>
+          <div class="check-row"><div class="check">1</div><div class="check-text"><strong style="color:var(--or)">Marché immense</strong> — Des milliers de clients non servis par des acteurs structurés au Sénégal</div></div>
+          <div class="check-row"><div class="check">2</div><div class="check-text"><strong style="color:var(--or)">Rentabilité rapide</strong> — ROI en 3 à 6 mois, bénéfice net ≈ 980 000 FCFA/mois</div></div>
+          <div class="check-row"><div class="check">3</div><div class="check-text"><strong style="color:var(--or)">Capital très accessible</strong> — 800 000 FCFA seulement pour un démarrage complet</div></div>
+          <div class="check-row"><div class="check">4</div><div class="check-text"><strong style="color:var(--or)">Différenciation durable</strong> — Image de marque forte, difficile à copier rapidement</div></div>
+          <div class="check-row"><div class="check">5</div><div class="check-text"><strong style="color:var(--or)">Expansion nationale</strong> — Modèle réplicable, franchise à l'horizon 3 ans</div></div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:.8vw">
+          <div style="background:rgba(255,154,0,.1);border:1px solid rgba(255,154,0,.3);border-radius:10px;padding:1vw 1.2vw">
+            <div style="font-size:.85vw;color:var(--or);font-weight:600;margin-bottom:.6vw">Roadmap 24 mois</div>
+            <div class="phases">
+              <div class="ph" style="background:rgba(255,154,0,.15)"><div class="ph-top" style="color:var(--or)">1</div><div class="ph-body"><div class="ph-name">Lancement</div><div class="ph-period">Mois 1–3</div><div class="ph-detail">Équipe, matériel, 1ers clients</div></div></div>
+              <div class="ph" style="background:rgba(61,26,0,.5)"><div class="ph-top" style="color:var(--or2)">2</div><div class="ph-body"><div class="ph-name">Croissance</div><div class="ph-period">Mois 4–6</div><div class="ph-detail">Fidélisation, réseaux</div></div></div>
+              <div class="ph" style="background:rgba(30,10,0,.5)"><div class="ph-top" style="color:var(--or2)">3</div><div class="ph-body"><div class="ph-name">Expansion</div><div class="ph-period">Mois 7–12</div><div class="ph-detail">Contrats B2B</div></div></div>
+              <div class="ph" style="background:rgba(255,154,0,.08);border:1px solid rgba(255,154,0,.2)"><div class="ph-top" style="color:var(--or)">4</div><div class="ph-body"><div class="ph-name">Leadership</div><div class="ph-period">Année 2+</div><div class="ph-detail">National, franchise</div></div></div>
+            </div>
+          </div>
+          <div style="background:var(--or);border-radius:10px;padding:1vw 1.2vw;text-align:center">
+            <div style="font-size:1vw;font-weight:700;color:var(--br)">Ensemble, faisons du propre</div>
+            <div style="font-size:.85vw;color:var(--br);opacity:.7;margin-top:.2vw">une entreprise rentable et durable</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="nav-row">
+    <button class="nav-btn" onclick="nav(-1)">Précédent</button>
+    <div class="dots" id="dots"></div>
+    <button class="nav-btn" onclick="nav(1)">Suivant</button>
+  </div>
+</div>
+
+<script>
+var cur = 0;
+var slides = document.querySelectorAll('.slide');
+var dotsEl = document.getElementById('dots');
+var sc = document.getElementById('sc');
+slides.forEach(function(_,i){
+  var d = document.createElement('div');
+  d.className = 'dot' + (i===0?' active':'');
+  d.onclick = function(){ go(i); };
+  dotsEl.appendChild(d);
+});
+function go(n){
+  slides[cur].classList.remove('active');
+  dotsEl.children[cur].classList.remove('active');
+  cur = (n+slides.length)%slides.length;
+  slides[cur].classList.add('active');
+  dotsEl.children[cur].classList.add('active');
+  sc.textContent = 'Slide '+(cur+1)+' / '+slides.length;
+}
+function nav(d){ go(cur+d); }
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowRight')nav(1);
+  if(e.key==='ArrowLeft')nav(-1);
+});
+</script>
